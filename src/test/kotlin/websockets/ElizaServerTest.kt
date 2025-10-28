@@ -8,7 +8,7 @@ import jakarta.websocket.ContainerProvider
 import jakarta.websocket.OnMessage
 import jakarta.websocket.Session
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -36,7 +36,6 @@ class ElizaServerTest {
         assertEquals("The doctor is in.", list[0])
     }
 
-    @Disabled // Remove this line when you implement onChat
     @Test
     fun onChat() {
         logger.info { "Test thread" }
@@ -48,9 +47,31 @@ class ElizaServerTest {
         latch.await()
         val size = list.size
         // 1. EXPLAIN WHY size = list.size IS NECESSARY
+        // La comunicación por WebSocket es asíncrona; si usamos directamente list.size,
+        // este valor podría cambiar mientras lo usamos. Al capturar el tamaño final en este momento,
+        // evitamos condiciones de carrera si llegan nuevos mensajes más tarde.
+
         // 2. REPLACE BY assertXXX expression that checks an interval; assertEquals must not be used;
+        assertTrue(size in 4..6)
+
         // 3. EXPLAIN WHY assertEquals CANNOT BE USED AND WHY WE SHOULD CHECK THE INTERVAL
+        // No se puede usar assertEquals porque el momento y la cantidad de mensajes puede variar ligeramente
+        // debido a la concurrencia y a la latencia de WebSocket. Usar un intervalo asegura que el test sea
+        // robusto frente a diferencias de tiempo.
+
         // 4. COMPLETE assertEquals(XXX, list[XXX])
+        assertEquals("The doctor is in.", list[0])
+        assertEquals("What's on your mind?", list[1])
+        assertEquals("---", list[2])
+        assertTrue(
+            list.any {
+                it.contains("sad", ignoreCase = true) ||
+                    it.contains("tell", ignoreCase = true) ||
+                    it.contains("feel", ignoreCase = true) ||
+                    it.contains("why", ignoreCase = true)
+            },
+            "Expected Eliza to respond with a doctor-style message",
+        )
     }
 }
 
@@ -73,7 +94,6 @@ class ComplexClient(
     private val latch: CountDownLatch,
 ) {
     @OnMessage
-    @Suppress("UNUSED_PARAMETER") // Remove this line when you implement onMessage
     fun onMessage(
         message: String,
         session: Session,
@@ -81,9 +101,9 @@ class ComplexClient(
         logger.info { "Client received: $message" }
         list.add(message)
         latch.countDown()
-        // 5. COMPLETE if (expression) {
-        // 6. COMPLETE   sentence
-        // }
+        if (message.contains("---")) {
+            session.basicRemote.sendText("I am feeling sad")
+        }
     }
 }
 
