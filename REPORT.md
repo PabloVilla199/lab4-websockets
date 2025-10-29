@@ -1,7 +1,6 @@
 # Lab 4 WebSocket -- Project Report
 
 ## Description of Changes
-[Detailed description of all changes made]
 
 ## Technical Decisions
 [Explanation of technical choices made]
