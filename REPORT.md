@@ -5,7 +5,7 @@
 
 In this lab assignment, we were asked to fix and complete the test file for the WebSocket server that implements the ELIZA chatbot. The goal was to verify the WebSocket communication and ensure that the server responded correctly to chat messages.
 
-First, I deleted the `@Disabled` annotation from the `onChat` test to enable it.
+First, I deleted the @Disabled annotation from the `onChat` test to enable it.
 
 Then, I explained why we need the line `size = list.size()`.
 This line captures the current number of received messages at that specific moment. Since WebSocket communication is asynchronous, the content of list could change while the test is still running.
@@ -27,7 +27,7 @@ Finally, I ran the tests, and they passed successfully, confirming that the WebS
   Because WebSocket communication is asynchronous, small variations in timing can occur between sent and received messages. Using assertTrue avoids false negatives when the exact position of a message in the list may vary.
 
 * **Verification of message order:**
-  The first three assertions confirmed that the initial messages — the greeting, the prompt, and the separator — were received in the correct order. This ensured that the communication sequence followed the expected dialogue flow before checking the chatbot’s generated response.
+  The first three assertions confirmed that the initial messages  the greeting, the prompt, and the separator ---  were received in the correct order. This ensured that the communication sequence followed the expected dialogue flow before checking the chatbot’s generated response.
 
 ---
 
