@@ -72,6 +72,8 @@ class ElizaServerTest {
             },
             "Expected Eliza to respond with a doctor-style message",
         )
+
+        logger.info { "Received messages: ${list.size}" }
     }
 }
 
@@ -101,9 +103,10 @@ class ComplexClient(
         logger.info { "Client received: $message" }
         list.add(message)
         latch.countDown()
-        if (message.contains("---")) {
+        if (message.contains("What's on your mind?")) {
             session.basicRemote.sendText("I am feeling sad")
         }
+        logger.info { "Received messages: ${list.size}" }
     }
 }
 
